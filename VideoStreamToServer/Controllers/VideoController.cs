@@ -15,15 +15,14 @@ namespace VideoStreamToServer.Controllers
     public class VideoController : Controller
     {
 
-        private readonly IConfiguration Configuration;
-        public FileUploadSettings? UploadSettings { get; private set; }
+        public readonly FileUploadSettings? UploadSettings;
 
 
-        public VideoController(IConfiguration configuration)
+        public VideoController(FileUploadSettings uploadSettings)
         {
-            Configuration = configuration;
-            UploadSettings = configuration.GetSection("FileUpload").Get<FileUploadSettings>();
+             UploadSettings = uploadSettings;
         }
+       
         [HttpPost]
         [DisableRequestSizeLimit]
 

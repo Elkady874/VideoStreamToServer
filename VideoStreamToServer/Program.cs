@@ -1,6 +1,26 @@
 using Microsoft.AspNetCore.Http.Features;
-
+using Microsoft.Extensions.Configuration;
+using VideoStreamToServer.Configurations;
+using VideoStreamToServer.Extensions;
 var builder = WebApplication.CreateBuilder(args);
+
+var UploadSettings = builder.Configuration.GetSection("FileUpload").Get<FileUploadSettings>();
+
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(name: MyAllowSpecificOrigins,
+//                      builder =>
+//                      {
+//                          builder.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+
+//                      });
+//});
+
+
+
 
 // Add services to the container.
 
@@ -13,7 +33,14 @@ builder.Services.Configure<FormOptions>(options =>
     // Set the limit to 256 MB
     options.MultipartBodyLengthLimit = 2684354560;
 });
+builder.Services.AddSingleton(UploadSettings);
 var app = builder.Build();
+app.UseCors(builder => builder
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+     .WithExposedHeaders("*")
+     );
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -27,5 +54,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.ConfigureTusChunkUpload("/files", UploadSettings.UploadPath);
+ 
+  
 
 app.Run();
