@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using VideoStreamToServer.Configurations;
 using VideoStreamToServer.Extensions;
+using VideoStreamToServer.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 var UploadSettings = builder.Configuration.GetSection("FileUpload").Get<FileUploadSettings>();
@@ -34,6 +35,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 2684354560;
 });
 builder.Services.AddSingleton(UploadSettings);
+builder.Services.AddSingleton<PDFGenerator>();
 var app = builder.Build();
 app.UseCors(builder => builder
     .AllowAnyOrigin()
